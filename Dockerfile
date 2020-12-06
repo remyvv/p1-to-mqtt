@@ -1,7 +1,13 @@
-FROM node:12-buster-slim
+FROM node:12-buster-slim AS builder
 
 COPY . /app
 WORKDIR /app
-RUN npm install
+RUN apt-get update && apt-get install -y python2.7 make build-essential \
+    && npm install ----build-from-source --python="python2.7" \
+    && rm -rf /var/lib/apt/lists/*
+
+FROM node:12-buster-slim
+
+COPY --from=builder /app .
 
 CMD ["npm", "run", "production"]
