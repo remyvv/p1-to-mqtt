@@ -1,0 +1,23 @@
+{
+  "name": "p1-to-mqtt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "production": "NODE_ENVIRONMENT=production node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@gitlab.hdns.nl:29189/remyvv/p1-to-mqtt.git"
+  },
+  "author": "Remy van Velthuijsen <remy@remysplace.de>",
+  "license": "WTFPL",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "dotenv": "^8.2.0",
+    "mqtt": "^4.2.1",
+    "p1-reader": "^2.0.1"
+  }
+}
