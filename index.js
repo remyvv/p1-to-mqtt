@@ -9,18 +9,25 @@ const mqttTopic = ( key ) => {
 	return `${prefix}/${key}`;
 };
 
+let messagesSend = {};
+
 const recursiveSend = ( object, prefix = '' ) => {
 	Object.keys( object ).forEach( function ( key ) {
-		if( object[key] === null ) {
+		if ( object[key] === null ) {
 			return;
 		}
 		const topicKey = prefix ? `${prefix}/${key}` : key;
 		if ( typeof object[ key ] === 'object' ) {
 			recursiveSend( object[ key ], topicKey );
 		} else {
-			mqtt.publish( mqttTopic( topicKey ), object[ key ].toString() );
+			const message = object[ key ].toString();
+			if (messagesSend.hasOwnProperty( topicKey ) && messagesSend[ topicKey ] === message) {
+				return;
+			}
+			messagesSend[ topicKey ] = message;
+			mqtt.publish(mqttTopic( topicKey ), message );
 		}
-	} );
+	});
 };
 
 mqtt.on( 'connect', () => logger.success( 'Connected to MQTT server.' ) );
