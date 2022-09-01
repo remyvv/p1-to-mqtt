@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@gitlab.hdns.nl:29189/remyvv/p1-to-mqtt.git"
+    "url": "ssh://git@github.com:remyvv/p1-to-mqtt.git"
   },
   "author": "Remy van Velthuijsen <remy@remysplace.de>",
   "license": "WTFPL",

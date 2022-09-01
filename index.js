@@ -4,6 +4,11 @@ const logger = require( './lib/logger' );
 const p1Reader = require( './lib/p1-reader' )();
 const mqtt = require( './lib/mqtt' )();
 
+const MQTT_QOS = Number( process.env.MQTT_QOS || 0 ),
+	MQTT_RETAIN = (
+		process.env.MQTT_RETAIN || 'yes'
+	) === 'yes';
+
 const mqttTopic = ( key ) => {
 	const prefix = process.env.MQTT_TOPIC_PREFIX || 'rkvv_p1/smartmeter';
 	return `${prefix}/${key}`;
@@ -21,11 +26,20 @@ const recursiveSend = ( object, prefix = '' ) => {
 			recursiveSend( object[ key ], topicKey );
 		} else {
 			const message = object[ key ].toString();
-			if (messagesSend.hasOwnProperty( topicKey ) && messagesSend[ topicKey ] === message) {
-				return;
+			if(MQTT_RETAIN) {
+				if (messagesSend.hasOwnProperty( topicKey ) && messagesSend[ topicKey ] === message) {
+					return;
+				}
+				messagesSend[ topicKey ] = message;
 			}
-			messagesSend[ topicKey ] = message;
-			mqtt.publish(mqttTopic( topicKey ), message );
+			mqtt.publish(
+				mqttTopic( topicKey ),
+				message,
+				{
+					qos: MQTT_QOS,
+					retain: MQTT_RETAIN
+				}
+			);
 		}
 	});
 };
@@ -47,6 +61,6 @@ p1Reader.on( 'reading', data => {
 
 p1Reader.on( 'error', err => logger.error( 'Error while reading P1-port: ' + err ) );
 
-process.on('exit', (code) => {
+process.on('exit', () => {
 	mqtt.end();
 });
